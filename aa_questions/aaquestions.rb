@@ -12,7 +12,8 @@ class QuestionsDatabase < SQLite3::Database
 end
 
 class Question
-  attr_accessor :title, :body, :author
+  attr_accessor :title, :body, :author_id
+  attr_reader :id
 
   def self.all
     data = QuestionsDatabase.instance.execute("SELECT * FROM questions")
@@ -27,7 +28,7 @@ class Question
   end 
 
   def self.find_by_id(id)
-    questions = QuestionDatabase.instance.execute(<<-SQL, id)
+    questions = QuestionsDatabase.instance.execute(<<-SQL, id)
       SELECT
         *
       FROM
@@ -41,7 +42,7 @@ class Question
   end
   
   def self.find_by_author_id(author_id)
-    questions = QuestionDatabase.instance.execute(<<-SQL, author_id)
+    questions = QuestionsDatabase.instance.execute(<<-SQL, author_id)
       SELECT
         *
       FROM
@@ -64,6 +65,7 @@ end
 
 class Reply
   attr_accessor :question_id, :reply_id, :user_id, :body
+  attr_reader :id
   
   def self.all
     data = QuestionsDatabase.instance.execute("SELECT * FROM replies")
@@ -79,7 +81,7 @@ class Reply
   end 
 
   def self.find_by_id(id)
-    replies = QuestionDatabase.instance.execute(<<-SQL, id)
+    replies = QuestionsDatabase.instance.execute(<<-SQL, id)
       SELECT
         *
       FROM
@@ -93,7 +95,7 @@ class Reply
   end
   
   def self.find_by_user_id(user_id) 
-    replies = QuestionDatabase.instance.execute(<<-SQL, user_id)
+    replies = QuestionsDatabase.instance.execute(<<-SQL, user_id)
       SELECT
         *
       FROM
@@ -106,7 +108,7 @@ class Reply
   end 
   
   def self.find_by_question_id(question_id)
-    replies = QuestionDatabase.instance.execute(<<-SQL, question_id)
+    replies = QuestionsDatabase.instance.execute(<<-SQL, question_id)
       SELECT
         *
       FROM
@@ -127,7 +129,7 @@ class Reply
   end
   
   def parent_reply 
-    return nil unless self.reply_id.length > 0  
+    return nil if self.reply_id.nil?
     Reply.find_by_id(self.reply_id)
   end 
   
@@ -140,6 +142,7 @@ end
 
 class User
   attr_accessor :fname, :lname
+  attr_reader :id 
   
   def self.all
     data = QuestionsDatabase.instance.execute("SELECT * FROM users")
@@ -153,7 +156,7 @@ class User
   end 
 
   def self.find_by_id(id)
-    users = QuestionDatabase.instance.execute(<<-SQL, id)
+    users = QuestionsDatabase.instance.execute(<<-SQL, id)
       SELECT
         *
       FROM
@@ -167,7 +170,7 @@ class User
   end
   
   def self.find_by_name(fname, lname) 
-    users = QuestionDatabase.instance.execute(<<-SQL, fname, lname)
+    users = QuestionsDatabase.instance.execute(<<-SQL, fname, lname)
       SELECT
         *
       FROM
