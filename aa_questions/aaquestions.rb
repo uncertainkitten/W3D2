@@ -65,6 +65,10 @@ class Question
   def followers
     QuestionFollow.followers_for_question_id(self.id)
   end
+  
+  def self.most_followed(n)
+    QuestionFollow.most_followed_questions(n)
+  end
 end
 
 class Reply
@@ -242,4 +246,28 @@ class QuestionFollow
     
     questions.map { |question| Question.new(question) }
   end 
+  
+  def self.most_followed_questions(n)
+    questions = QuestionsDatabase.instance.execute(<<-SQL, n)
+    SELECT
+      *
+    FROM
+      questions
+      JOIN question_follows
+      ON question_follows.question_id = questions.id
+    GROUP BY
+      question_id
+    ORDER BY
+      COUNT(*) DESC
+      LIMIT ?
+    SQL
+    return nil unless questions.length > 0
+    
+    questions.map {|question| Question.new(question)}
+  end
 end
+
+class QuestionLike 
+  
+  
+end 
