@@ -61,6 +61,10 @@ class Question
   def replies
     Reply.find_by_question_id(self.id)
   end
+  
+  def followers
+    QuestionFollow.followers_for_question_id(self.id)
+  end
 end
 
 class Reply
@@ -190,6 +194,10 @@ class User
   def authored_replies
     Reply.find_by_user_id(self.id)
   end 
+  
+  def followed_questions
+    QuestionFollow.followed_questions_for_user_id(self.id)
+  end
 end
 
 class QuestionFollow
