@@ -1,11 +1,13 @@
-PRAGMA foreign_keys = ON 
+PRAGMA foreign_keys = ON;
 
 CREATE TABLE users (
+  id INTEGER PRIMARY KEY,
   fname VARCHAR(255),
   lname VARCHAR(255)
 );
 
 CREATE TABLE questions (
+  id INTEGER PRIMARY KEY,
   title VARCHAR(150),
   body TEXT,
   author INTEGER NOT NULL,
@@ -22,6 +24,7 @@ CREATE TABLE question_follows (
 );
 
 CREATE TABLE replies (
+  id INTEGER PRIMARY KEY,
   question_id INTEGER NOT NULL,
   reply_id INTEGER,
   user_id INTEGER,
@@ -43,14 +46,16 @@ CREATE TABLE question_likes (
 INSERT INTO 
   users (fname, lname)
 VALUES 
-  ('Jonathan', 'Chu'), ('Cassandra', 'McClure'), ('User', '3');
+  ('Jonathan', 'Chu'), 
+  ('Cassandra', 'McClure'), 
+  ('User', '3');
 
 INSERT INTO 
-  questions(title, body, author)
+  questions (title, body, author)
 VALUES 
   ('webshot.rb', 'How do I shot web in ruby2.5?', 2), 
   ('App Academy Survival', 'How do I make it out alive?', 1), 
-  ('USER WAS BANNED', '[CONTENT REMOVED]', 3)
+  ('USER WAS BANNED', '[CONTENT REMOVED]', 3),
   ('Cool New Vid', 'Found this cool new vid, [link here]. Discuss', 2);
   
 INSERT INTO
@@ -70,4 +75,13 @@ VALUES
   (4, NULL, 1, 'very hilariously funny video!');
   
 INSERT INTO 
-
+  question_likes (question_id, user_id)
+VALUES
+  (4, 1),
+  (1, 1),
+  (3, 2),
+  (2, 2),
+  (1, 3),
+  (2, 3),
+  (3, 3),
+  (4, 3);
