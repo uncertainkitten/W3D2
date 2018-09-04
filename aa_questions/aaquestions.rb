@@ -54,10 +54,16 @@ class Question
   end
   
   def author
+    User.find_by_id(self.author_id)
+  end
+  
+  def replies
+    Reply.find_by_question_id(self.id)
   end
 end
 
 class Reply
+  attr_accessor :question_id, :reply_id, :user_id, :body
   
   def self.all
     data = QuestionsDatabase.instance.execute("SELECT * FROM replies")
@@ -112,10 +118,28 @@ class Reply
     replies.map { |reply| Reply.new(reply)}
   end 
   
+  def author
+    User.find_by_id(self.user_id)
+  end
+  
+  def question
+    Question.find_by_id(self.question_id)
+  end
+  
+  def parent_reply 
+    return nil unless self.reply_id.length > 0  
+    Reply.find_by_id(self.reply_id)
+  end 
+  
+  def child_replies
+    all_replies = Reply.find_by_question_id(self.question_id) 
+    all_replies.select { |reply| reply.reply_id == self.id } 
+  end 
   
 end
 
 class User
+  attr_accessor :fname, :lname
   
   def self.all
     data = QuestionsDatabase.instance.execute("SELECT * FROM users")
