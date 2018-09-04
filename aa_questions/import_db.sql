@@ -10,9 +10,9 @@ CREATE TABLE questions (
   id INTEGER PRIMARY KEY,
   title VARCHAR(150),
   body TEXT,
-  author INTEGER NOT NULL,
+  author_id INTEGER NOT NULL,
   
-  FOREIGN KEY (author) REFERENCES users(id)
+  FOREIGN KEY (author_id) REFERENCES users(id)
 );
 
 CREATE TABLE question_follows (
@@ -51,7 +51,7 @@ VALUES
   ('User', '3');
 
 INSERT INTO 
-  questions (title, body, author)
+  questions (title, body, author_id)
 VALUES 
   ('webshot.rb', 'How do I shot web in ruby2.5?', 2), 
   ('App Academy Survival', 'How do I make it out alive?', 1), 
