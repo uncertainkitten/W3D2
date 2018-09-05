@@ -205,6 +205,8 @@ class User
 end
 
 class QuestionFollow
+  attr_accessor :question_id, :user_id 
+  
   def self.all
     data = QuestionsDatabase.instance.execute("SELECT * FROM question_follows")
     data.map { |datum| QuestionFollow.new(datum) }
@@ -268,6 +270,63 @@ class QuestionFollow
 end
 
 class QuestionLike 
+  attr_accessor :question_id, :user_id
   
+  def self.all
+    data = QuestionsDatabase.instance.execute("SELECT * FROM question_likes")
+    data.map { |datum| QuestionLike.new(datum) }
+  end
+  
+  def initialize(options)
+    @question_id = options['question_id']
+    @user_id = options['user_id']
+  end 
+  
+  def self.likers_for_question_id(question_id)
+    users = QuestionsDatabase.instance.execute(<<-SQL, question_id)
+      SELECT
+        *
+      FROM
+        users
+        JOIN question_likes
+        ON question_likes.user_id = users.id 
+      WHERE
+        question_id = ?
+    SQL
+    return nil unless users.length > 0
+    
+    users.map { |user| User.new(user) }
+  end
+  
+  def self.num_likes_for_question_id(question_id)
+    likes = QuestionsDatabase.instance.execute(<<-SQL, question_id)
+      SELECT 
+      COUNT(*)
+      FROM 
+        users 
+        JOIN question_likes 
+        ON question_likes.user_id = users.id 
+      WHERE 
+        question_id = ? 
+    SQL
+      
+    likes   
+  end 
+  
+  def self.liked_questions_for_user_id(user_id)
+    questions = QuestionsDatabase.instance.execute(<<-SQL, user_id)
+      SELECT
+        *
+      FROM
+        questions
+        JOIN question_likes 
+        ON question_likes.question_id = questions.id 
+      WHERE
+        user_id = ?
+    SQL
+    return nil unless questions.length > 0
+    
+    questions.map { |question| Question.new(question) }
+  end 
   
 end 
