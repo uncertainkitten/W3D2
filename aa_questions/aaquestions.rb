@@ -69,6 +69,19 @@ class Question
   def self.most_followed(n)
     QuestionFollow.most_followed_questions(n)
   end
+  
+  def likers 
+    QuestionLike.likers_for_question_id(self.id)
+  end
+  
+  def num_likes 
+    QuestionLike.num_likes_for_question_id(self.id)
+  end  
+  
+  def self.most_liked(n)
+    QuestionLike.most_liked_questions(n)
+  end 
+  
 end
 
 class Reply
@@ -202,6 +215,15 @@ class User
   def followed_questions
     QuestionFollow.followed_questions_for_user_id(self.id)
   end
+  
+  def liked_questions 
+    QuestionLike.liked_questions_for_user_id(self.id)
+  end 
+  
+  def average_karma
+    
+  end
+  
 end
 
 class QuestionFollow
@@ -328,5 +350,28 @@ class QuestionLike
     
     questions.map { |question| Question.new(question) }
   end 
+  
+  def self.most_liked_questions(n)
+    questions = QuestionsDatabase.instance.execute(<<-SQL, n)
+    SELECT
+      *
+    FROM
+      questions
+      JOIN question_likes
+      ON question_likes.question_id = questions.id
+    GROUP BY
+      question_id
+    ORDER BY
+      COUNT(*) DESC
+      LIMIT ?
+    SQL
+    return nil unless questions.length > 0
+    
+    questions.map {|question| Question.new(question)}
+  end 
+  
+  
+  
+  
   
 end 
